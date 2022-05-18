@@ -1,48 +1,51 @@
-const { stat, createReadStream, mkdir, rmdir } = require('fs');
+
 const { readdir, copyFile } = require('fs/promises');
 const path = require('path');
+const { mkdir, rm } = require('node:fs');
+const { rmdir, stat } = require('fs');
+const { dirname } = require('path');
 
 
 
-async function copyDir () {
-  const stream = await createReadStream(__filename);
+
+async function copyDir() {
   let arrayWithNameFoldersFiles;
+  await stat(path.join(__dirname, 'files-copy'), (err) => {
+    if(!err) {
+      rm(path.join(__dirname, 'files-copy'), { recursive: true }, async function (err) {
+        if (err) return err;
+        console.log('Dir is deleted!');
 
-  stream.on('open', async () => {
+        await mkdir(path.join(__dirname, 'files-copy'), { recursive: true }, (err) => {
+          if (err) return err;
+          console.log('Dir is created!');
+        });
+        arrayWithNameFoldersFiles = await readdir(path.join(__dirname, 'files'), { withFileTypes: true });
 
-    // async function newFolder() {
-    await rmdir(path.join(__dirname, 'files-copy'), { recursive: true },  (err)=>  {
-      if (err) return err;
-      console.log('Dir is deleted!');
+        recursive(path.join(__dirname, 'files', arrayWithNameFoldersFiles[0].name), path.join(__dirname, 'files-copy', arrayWithNameFoldersFiles[0].name), 0);
+      });
+        
+    } else {
+      mkdir(path.join(__dirname, 'files-copy'), { recursive: true }, async (err) => {
+        if (err) return err;
+        console.log('Dir is created!');
+        arrayWithNameFoldersFiles = await readdir(path.join(__dirname, 'files'), { withFileTypes: true });
+        recursive(path.join(__dirname, 'files', arrayWithNameFoldersFiles[0].name), path.join(__dirname, 'files-copy', arrayWithNameFoldersFiles[0].name), 0);
+      });
 
-    });
-    await mkdir(path.join(__dirname, 'files-copy'), { recursive: true }, (err) => {
-      if (err) return err;
-      console.log('Dir is created!');
-    });
+      
 
-    // readFolder();
-
-    // }
-    // newFolder();
-
-
-    // async function readFolder() {
-    arrayWithNameFoldersFiles = await readdir(path.join(__dirname, 'files'), { withFileTypes: true });
-    console.log(arrayWithNameFoldersFiles);
-
-    recursive(path.join(__dirname, 'files', arrayWithNameFoldersFiles[0].name), path.join(__dirname, 'files-copy', arrayWithNameFoldersFiles[0].name), 0);
-
-    // }
-
-    async function recursive(pathFile, pathCopyFile, index) {
-      await copyFile(pathFile, pathCopyFile);
-      if (index != arrayWithNameFoldersFiles.length - 1) {
-        return recursive(path.join(__dirname, 'files', arrayWithNameFoldersFiles[index + 1].name), path.join(__dirname, 'files-copy', arrayWithNameFoldersFiles[index + 1].name), index + 1);
-      }
     }
-
   });
+  
+
+  function recursive(pathFile, pathCopyFile, index) {
+    copyFile(pathFile, pathCopyFile);
+    if (index != arrayWithNameFoldersFiles.length - 1) {
+      return recursive(path.join(__dirname, 'files', arrayWithNameFoldersFiles[index + 1].name), path.join(__dirname, 'files-copy', arrayWithNameFoldersFiles[index + 1].name), index + 1);
+    }
+  }
+
 }
 
 copyDir();
