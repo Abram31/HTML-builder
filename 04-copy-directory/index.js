@@ -2,8 +2,7 @@
 const { readdir, copyFile } = require('fs/promises');
 const path = require('path');
 const { mkdir, rm } = require('node:fs');
-const { rmdir, stat } = require('fs');
-const { dirname } = require('path');
+const { stat } = require('fs');
 
 
 
