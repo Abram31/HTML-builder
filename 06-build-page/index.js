@@ -152,18 +152,18 @@ readdir(pathStyles, { withFileTypes: true })
         stream.on('close', async () => {
           await bundle.push(dataFile);
           // console.log(dataFile[1]);
-          if (await index === arrWithNameFiles.length - 1) {
-            let stringBundle = await bundle.join('').toString();
-            // console.log(222222);
+          // if (await index === arrWithNameFiles.length - 1) {
+          let stringBundle = await bundle.join('').toString();
+          // console.log(222222);
 
-            await fs.writeFile(pathBundleStyles, stringBundle, (err) => {
-              if (err)
-                console.log(err);
-              else {
-                console.log('File written successfully\n');
-              }
-            });
-          }
+          await fs.writeFile(pathBundleStyles, stringBundle, (err) => {
+            if (err)
+              console.log(err);
+            else {
+              console.log('File written successfully\n');
+            }
+          });
+          // }
         });
 
       });
