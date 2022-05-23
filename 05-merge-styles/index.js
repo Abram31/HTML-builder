@@ -5,23 +5,20 @@ const path = require('path');
 const { Stream } = require('stream');
 
 
-// const streamRead = fs.createReadStream(path.join(__dirname));
 let arrWithNameFiles = [];
 let stringBundle;
 let bundle = [];
 
-// function readDir () {
-
-
+////variant with readdir
   
-fs.readdir(path.join(__dirname, 'styles'), { withFileTypes: true }, (async(err, dirent) => {            ////variant with readdir
+fs.readdir(path.join(__dirname, 'styles'), { withFileTypes: true }, (async(err, dirent) => {            
   if(err) throw err;
   dirent.forEach(file => {
     if (path.extname(file.name) === '.css') {
       arrWithNameFiles.push(file.name);
     }
   });
-  console.log(arrWithNameFiles);
+  // console.log(arrWithNameFiles);
   arrWithNameFiles.forEach((nameFile, index) => {
     const stream = fs.createReadStream(path.join(__dirname, 'styles', nameFile));
 
@@ -32,24 +29,20 @@ fs.readdir(path.join(__dirname, 'styles'), { withFileTypes: true }, (async(err, 
 
     });
     stream.on('end',  () => {
-       bundle.push(dataFile);
-      console.log(dataFile[1]);
+      bundle.push(dataFile);
+      // console.log(dataFile[1]);
 
       // if (index === arrWithNameFiles.length - 1) {
-        stringBundle = bundle.join('').toString();
-        console.log(222222);
+      stringBundle = bundle.join('').toString();
+      // console.log(222222);
 
-        fs.writeFile(path.join(__dirname, 'project-dist', 'bundle.css'), stringBundle, (err) => {
-          if (err)
-            console.log(err);
-          else {
-            console.log('File written successfully\n');
-          }
-        });
-      // }
+      fs.writeFile(path.join(__dirname, 'project-dist', 'bundle.css'), stringBundle, (err) => {
+        if (err)
+          console.log(err);
+       
+      });
 
     });
-    // stream.on('')
 
 
 
@@ -60,49 +53,6 @@ fs.readdir(path.join(__dirname, 'styles'), { withFileTypes: true }, (async(err, 
 
 
   
-// return console.log(bundle) ;
-// }
-// readDir();
-
-
-
-
-// const fs = require('fs');   //расширение д/работы с файловой системой
-// const path = require('path'); //расширения д/работы с путями
-// const wayToStyles = path.join(__dirname, 'styles');
-// const wayTobandle = path.join(__dirname, 'project-dist', 'bundle.css');
-
-// let myWriteStream = fs.createWriteStream(wayTobandle, 'utf-8');
-
-// fs.readdir(wayToStyles, (err, array) => {
-//   if (err) throw err;
-//   array.forEach(el => {               //array with files
-//     if (err) throw err;
-//     let myReadStream = fs.createReadStream(path.join(wayToStyles, `${el}`), 'utf-8');
-//     if (err) throw err;
-//     let fileName = path.join(wayToStyles, `${el}`);
-//     fs.stat(fileName, (err, stats) => {
-//       if (err) throw err;
-//       if (stats.isFile() == true && path.extname(el).slice(1) == 'css') {             //get files
-//         fs.readFile(path.join(wayToStyles, `${el}`), 'utf8', function (error, fileContent) {
-//           if (error) throw error; // ошибка чтения файла, если есть
-//           myReadStream.pipe(myWriteStream);
-//           if (err) throw err;
-//         });
-//       }
-//     });
-//   });
-// });
-
-
-
-
-
-
-
-
-
-
 
 
 

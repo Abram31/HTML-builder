@@ -3,7 +3,6 @@ const fs = require('fs');
 const {readdir,copyFile} = require('fs/promises');
 const { dirname } = require('path');
 const path = require('path');
-
 // from
 const pathComponents = path.join(__dirname, 'components');
 const pathAssets = path.join(__dirname, 'assets');
@@ -19,17 +18,17 @@ const pathBundleAssets =  path.join(pathProjectDist, 'assets');
 
 fs.mkdir(pathProjectDist, {recursive:true}, (err)=>{
   if(err) console.log(err);
-  console.log('Project dir is create!');
+  // console.log('Project dir is create!');
 
 });
 
 fs.open(path.join(pathProjectDist, 'index.html'), 'w', (err) => {
   if (err) throw err;
-  console.log('File index is create');
+  // console.log('File index is create');
 });
 fs.open(path.join(pathProjectDist, 'style.css'), 'w', (err) => {
   if (err) throw err;
-  console.log('File style is create');
+  // console.log('File style is create');
 });
 
 
@@ -39,9 +38,6 @@ const readebleStreamTemplate = fs.createReadStream(pathTemplate, 'utf-8');
 
 const writeStream = fs.createWriteStream(pathBundleHTML);
 
-// writeStream.on('pipe', (chunk)=>{
-//   console.log('I do IT!');
-// })
 
 readebleStreamTemplate.pipe(writeStream);
 
@@ -54,12 +50,6 @@ readebleStreamTemplate.on('data',(chunk) => {
 let arrWithNameComponents = [];
 let objWithDataComponents = {};
 readebleStreamTemplate.on('end', async ()=>{
-
-  // const writeStreamIndex = fs.createWriteStream(pathBundleHTML);
-  // writeStreamIndex.on('open' ()=>{
-
-  // })
-  
 
   fs.readdir(pathComponents, (err, files) => {
     if (err) console.log(err);
@@ -82,11 +72,9 @@ readebleStreamTemplate.on('end', async ()=>{
     });
     
     dataComponent.on('end', ()=>{
-      // console.log(objWithDataComponents);
       includeCmponents();
     });
     
-    // console.log(dataTemplate);
   });
 
  
@@ -95,7 +83,6 @@ readebleStreamTemplate.on('end', async ()=>{
 
 function includeCmponents() {
   let objNameIndex = {};
-  // console.log(dataTemplate);
   dataTemplate.join('').split('\r\n').forEach((element,index) => {
     arrWithNameComponents.forEach(nameFile => {
       if (element.search(nameFile) != -1) {
@@ -109,20 +96,17 @@ function includeCmponents() {
   dataTemplate = dataTemplate.join('').split('\r\n');
 
   for (let key in objNameIndex) {
-    // console.log(objNameIndex[key]);
-    // console.log(key);
     if (objWithDataComponents[`${key}.html`]) {
       dataTemplate.splice(+objNameIndex[key], 1, objWithDataComponents[`${key}.html`]);
 
     }
   }
-  dataTemplate = dataTemplate.join('');
+  dataTemplate = dataTemplate.join('\r\n');
 
   fs.writeFile(pathBundleHTML, dataTemplate, (err)=>{
-    if(err) return console.log(err);
+    if(err)  throw err;
   });
 
-  // console.log(dataTemplate);
 }
 
 
@@ -131,7 +115,6 @@ function includeCmponents() {
 let arrWithNameFiles = [];
 let bundle = [];
 
-// function readDir () {
 readdir(pathStyles, { withFileTypes: true })
   .then((dirent) => {
     dirent.forEach(file => {
@@ -141,7 +124,6 @@ readdir(pathStyles, { withFileTypes: true })
     });
   })
   .then(() => {
-    // console.log(arrWithNameFiles);
     arrWithNameFiles.forEach(async (nameFile, index) => {
       const stream = fs.createReadStream(path.join(pathStyles, nameFile));
 
@@ -160,7 +142,7 @@ readdir(pathStyles, { withFileTypes: true })
             if (err)
               console.log(err);
             else {
-              console.log('File written successfully\n');
+              // console.log('File written successfully\n');
             }
           });
           // }
@@ -179,28 +161,26 @@ async function copyAssets () {
   fs.stat(pathAssets, (err)=>{
     if(err) throw err;
     fs.rm(pathBundleAssets, {recursive:true}, ()=>{
-      console.log('dir is deleted');
+      // console.log('dir is deleted');
 
       fs.mkdir(pathBundleAssets, {recursive:true}, (err)=>{
         if (err) return err;
-        console.log('Dir is created!');
+        // console.log('Dir is created!');
       });
 
       function recursive(pathFolder = pathAssets, pathCopyFolder = pathBundleAssets) {
         fs.stat(pathFolder, (err,stats)=>{
           if(err) throw console.log(err);
-          // console.log(stats);
           readdir(pathFolder, { withFileTypes: true })
             .then((dirent) => {
               dirent.forEach((element) =>{
                 if(element.isFile()) {
                   copyFile(path.join(pathFolder, element.name), path.join(pathCopyFolder, element.name));
 
-                  console.log(err);
                 } else {
                   fs.mkdir(path.join(pathCopyFolder, `${element.name}`), { recursive: true }, (err) => {
                     if (err) return err;
-                    console.log(`Dir ${element.name} is created!`);
+                    // console.log(`Dir ${element.name} is created!`);
                   });
                   recursive(path.join(pathFolder, `${element.name}`),path.join(pathCopyFolder, `${element.name}`));
                 }
@@ -209,17 +189,15 @@ async function copyAssets () {
             });
 
          
-          // console.log(stats.isFile());
         });
       }
       recursive();
     });
     
-
-
   });
 }
 copyAssets();
+
 // async function copyDir() {
 //   let arrayWithNameFoldersFiles;
 //   await fs.stat(pathBundleAssets, (err) => {
